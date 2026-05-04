@@ -5,6 +5,7 @@ from collections import defaultdict
 import os
 from datetime import datetime
 import concurrent.futures
+import random
 
 def fetch_and_parse_page(url, proxy):
     """Fetches and parses a single page of election results."""
@@ -105,5 +106,6 @@ if __name__ == "__main__":
         print("-" * 60)
         print(f"AC Counted So Far: {total_declared}/{TOTAL_CONSTITUENCIES}")
 
-        print("\nPolling again in 5 minutes...")
-        time.sleep(300)
+        noisy_sleep = random.choice(range(280, 320, 1))
+        print("\nPolling again in around 5 minutes ("+str(noisy_sleep)+" seconds to be precise)"+"... ")
+        time.sleep(noisy_sleep)
