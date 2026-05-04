@@ -89,8 +89,15 @@ if __name__ == "__main__":
         results = fetch_results(base_url, max_pages=15, proxy=my_proxy)
         total_declared = sum(sum(counts.values()) for counts in results.values())
 
+        # Determine the maximum party name length for alignment
+        max_party_len = max((len(party) for party in results.keys()), default=0)
+
         print("\nSeat Allocation:")
-        print("-" * 60)
+        # Calculate dynamic line width for a clean table-like output
+        # Format: "{party:<{max_party_len}} : {total:>3} (Won: {won:>3}, Leading: {leading:>3})"
+        # Additional length for numbers and labels: 31 characters
+        line_width = max(60, max_party_len + 31)
+        print("-" * line_width)
 
         sorted_parties = sorted(
             results.items(),
@@ -105,8 +112,8 @@ if __name__ == "__main__":
             won = counts.get('Won', 0)
             leading = counts.get('Leading', 0)
             total = won + leading
-            print(f"{party}: {total} (Won: {won}, Leading: {leading})")
-        print("-" * 60)
+            print(f"{party:<{max_party_len}} : {total:>3} (Won: {won:>3}, Leading: {leading:>3})")
+        print("-" * line_width)
         print(f"AC Counted So Far: {total_declared}/{TOTAL_CONSTITUENCIES}")
 
         noisy_sleep = random.choice(range(280, 320, 1))
