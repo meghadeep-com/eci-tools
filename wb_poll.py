@@ -73,6 +73,7 @@ def fetch_results(base_url, max_pages=15, proxy=None):
 if __name__ == "__main__":
     base_url = "https://results.eci.gov.in/ResultAcGenMay2026/statewiseS25" # S25 is for West Bengal
     TOTAL_CONSTITUENCIES = 294 # Total number of assembly constituencies in West Bengal
+    MAJORITY_MARK = (TOTAL_CONSTITUENCIES // 2) + 1
 
     # We found that using default curl without a custom User-Agent works best.
     # The ECI Akamai WAF blocks Python requests and custom browser User-Agents from non-residential IPs.
@@ -92,13 +93,6 @@ if __name__ == "__main__":
         # Determine the maximum party name length for alignment
         max_party_len = max((len(party) for party in results.keys()), default=0)
 
-        print("\nSeat Allocation:")
-        # Calculate dynamic line width for a clean table-like output
-        # Format: "{party:<{max_party_len}} : {total:>3} (Won: {won:>3}, Leading: {leading:>3})"
-        # Additional length for numbers and labels: 31 characters
-        line_width = max(60, max_party_len + 31)
-        print("-" * line_width)
-
         sorted_parties = sorted(
             results.items(),
             key=lambda item: (
@@ -108,13 +102,33 @@ if __name__ == "__main__":
             )
         )
 
-        for party, counts in sorted_parties:
+        # Check if the leading party has reached a majority to adjust table width
+        majority_achieved = False
+        if sorted_parties:
+            top_party_total = sum(sorted_parties[0][1].values())
+            if top_party_total >= MAJORITY_MARK:
+                majority_achieved = True
+
+        print("\nSeat Allocation:")
+        # Calculate dynamic line width, adding space for the majority marker if needed
+        line_width = max(60, max_party_len + 31)
+        if majority_achieved:
+            line_width += 13  # for "  <-- Majority"
+
+        print("-" * line_width)
+
+        for i, (party, counts) in enumerate(sorted_parties):
             won = counts.get('Won', 0)
             leading = counts.get('Leading', 0)
             total = won + leading
-            print(f"{party:<{max_party_len}} : {total:>3} (Won: {won:>3}, Leading: {leading:>3})")
+            output_line = f"{party:<{max_party_len}} : {total:>3} (Won: {won:>3}, Leading: {leading:>3})"
+            # Add marker only for the first party if majority is achieved
+            if i == 0 and majority_achieved:
+                output_line += "  <-- Majority"
+            print(output_line)
         print("-" * line_width)
         print(f"AC Counted So Far: {total_declared}/{TOTAL_CONSTITUENCIES}")
+        print(f"Majority Mark: {MAJORITY_MARK}")
 
         noisy_sleep = random.choice(range(280, 320, 1))
         print("\nPolling again in around 5 minutes ("+str(noisy_sleep)+" seconds to be precise)"+"... ")
