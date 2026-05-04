@@ -103,7 +103,7 @@ if __name__ == "__main__":
                 output_line += " <-- Majority"
             print(output_line)
         print("-" * line_width)
-        print(f"AC Counted So Far: {total_declared}/{TOTAL_CONSTITUENCIES}")
+        print(f"ACs Reported So Far: {total_declared}/{TOTAL_CONSTITUENCIES}")
         print(f"Majority Mark: {MAJORITY_MARK}")
 
         noisy_sleep = random.choice(range(100, 140, 1))
