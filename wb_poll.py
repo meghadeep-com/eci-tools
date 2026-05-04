@@ -103,7 +103,7 @@ if __name__ == "__main__":
             total = won + leading
             print(f"{party}: {total} (Won: {won}, Leading: {leading})")
         print("-" * 60)
-        print(f"Total Declared: {total_declared}/{TOTAL_CONSTITUENCIES}")
+        print(f"AC Counted So Far: {total_declared}/{TOTAL_CONSTITUENCIES}")
 
         print("\nPolling again in 5 minutes...")
         time.sleep(300)
