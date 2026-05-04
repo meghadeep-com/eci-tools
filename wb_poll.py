@@ -94,8 +94,11 @@ if __name__ == "__main__":
 
         sorted_parties = sorted(
             results.items(),
-            key=lambda item: sum(item[1].values()),
-            reverse=True
+            key=lambda item: (
+                -sum(item[1].values()),  # Sort by total seats (desc)
+                -item[1].get('Won', 0),  # Then by won seats (desc)
+                item[0]                  # Then by party name (asc)
+            )
         )
 
         for party, counts in sorted_parties:
